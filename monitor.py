@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import subprocess
 
 import rosnode
 import rospy
@@ -55,7 +56,11 @@ if __name__ == "__main__":
         rospy.logerr("[cpu monitor] failed to get api of node %s (%s)" % (node, node_api))
         continue
 
-      if this_ip not in node_api:
+      local_node = "localhost" in node_api or \
+                   "127.0.0.1" in node_api or \
+                   (this_ip is not None and this_ip in node_api) or \
+                   subprocess.check_output("hostname").strip() in node_api
+      if not local_node:
         ignored_nodes.add(node)
         rospy.loginfo("[cpu monitor] ignoring node %s with URI %s" % (node, node_api))
         continue

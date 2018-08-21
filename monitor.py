@@ -44,7 +44,16 @@ if __name__ == "__main__":
   ignored_nodes = set()
 
   cpu_publish = rospy.Publisher("cpu_monitor/total_cpu", Float32, queue_size=20)
-  mem_publish = rospy.Publisher("cpu_monitor/total_mem", UInt64, queue_size=20)
+
+  mem_topics = ["available", "used", "free", "active", "inactive", "buffers", "cached", "shared", "slab"]
+
+  vm = psutil.virtual_memory()
+  mem_topics = filter(lambda topic: topic in dir(vm), mem_topics)
+
+  mem_publishers = []
+  for mem_topic in mem_topics:
+    mem_publishers.append(rospy.Publisher("cpu_monitor/total_%s_mem" % mem_topic,
+                                          UInt64, queue_size=20))
 
   while not rospy.is_shutdown():
     for node in rosnode.get_node_names():
@@ -81,6 +90,9 @@ if __name__ == "__main__":
         del node_map[node_name]
 
     cpu_publish.publish(Float32(psutil.cpu_percent()))
-    mem_publish.publish(UInt64(psutil.virtual_memory().used))
+
+    vm = psutil.virtual_memory()
+    for mem_topic, mem_publisher in zip(mem_topics, mem_publishers):
+      mem_publisher.publish(UInt64(getattr(vm, mem_topic)))
 
     rospy.sleep(POLL_PERIOD)

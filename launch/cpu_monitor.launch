@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen"/>
+</launch>

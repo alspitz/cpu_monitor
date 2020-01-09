@@ -1,3 +1,7 @@
 <launch>
-  <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen"/>
+  <arg name="poll_period" default="1.0"/>
+
+  <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen">
+    <param name="poll_period" value="$(arg poll_period)"/>
+  </node>
 </launch>

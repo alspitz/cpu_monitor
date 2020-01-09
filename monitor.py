@@ -15,7 +15,6 @@ except ImportError:
 
 from std_msgs.msg import Float32, UInt64
 
-POLL_PERIOD = 1.0
 
 def ns_join(*names):
   return reduce(rospy.names.ns_join, names, "")
@@ -37,6 +36,8 @@ class Node:
 if __name__ == "__main__":
   rospy.init_node("cpu_monitor")
   master = rospy.get_master()
+
+  poll_period = rospy.get_param('~poll_period', 1.0)
 
   this_ip = os.environ.get("ROS_IP")
 
@@ -95,4 +96,4 @@ if __name__ == "__main__":
     for mem_topic, mem_publisher in zip(mem_topics, mem_publishers):
       mem_publisher.publish(UInt64(getattr(vm, mem_topic)))
 
-    rospy.sleep(POLL_PERIOD)
+    rospy.sleep(poll_period)

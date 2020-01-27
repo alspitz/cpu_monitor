@@ -80,8 +80,11 @@ if __name__ == "__main__":
       except:
         rospy.logerr("[cpu monitor] failed to get pid of node %s (api is %s)" % (node, node_api))
       else:
-        node_map[node] = Node(node, resp[2])
-        rospy.loginfo("[cpu monitor] adding new node %s" % node)
+        if resp.shape[0] > 2:
+          node_map[node] = Node(node, resp[2])
+          rospy.loginfo("[cpu monitor] adding new node %s" % node)
+        else:
+          rospy.logerr("[cpu monitor] incorrect shape for node %s (api is %s)" % (node, node_api))
 
     for node_name, node in list(node_map.items()):
       if node.alive():

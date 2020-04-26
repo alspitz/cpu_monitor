@@ -82,8 +82,13 @@ if __name__ == "__main__":
       except:
         rospy.logerr("[cpu monitor] failed to get pid of node %s (api is %s)" % (node, node_api))
       else:
-        node_map[node] = Node(node, resp[2])
-        rospy.loginfo("[cpu monitor] adding new node %s" % node)
+        try:
+          pid = resp[2]
+        except:
+          rospy.logerr("[cpu monitor] failed to get pid for node %s from NODEINFO response: %s" % (node, resp))
+        else:
+          node_map[node] = Node(name=node, pid=pid)
+          rospy.loginfo("[cpu monitor] adding new node %s" % node)
 
     for node_name, node in list(node_map.items()):
       if node.alive():

@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
+import functools
 import os
 import subprocess
 
@@ -7,7 +8,6 @@ import rosnode
 import rospy
 
 import psutil
-import functools
 
 try:
   from xmlrpc.client import ServerProxy

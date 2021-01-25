@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import subprocess
@@ -7,6 +7,7 @@ import rosnode
 import rospy
 
 import psutil
+import functools
 
 try:
   from xmlrpc.client import ServerProxy
@@ -17,7 +18,7 @@ from std_msgs.msg import Float32, UInt64
 
 
 def ns_join(*names):
-  return reduce(rospy.names.ns_join, names, "")
+  return functools.reduce(rospy.names.ns_join, names, "")
 
 class Node:
   def __init__(self, name, pid):
@@ -71,7 +72,7 @@ if __name__ == "__main__":
       local_node = "localhost" in node_api or \
                    "127.0.0.1" in node_api or \
                    (this_ip is not None and this_ip == ros_ip) or \
-                   subprocess.check_output("hostname").strip() in node_api
+                   subprocess.check_output("hostname").decode('utf-8').strip() in node_api
       if not local_node:
         ignored_nodes.add(node)
         rospy.loginfo("[cpu monitor] ignoring node %s with URI %s" % (node, node_api))

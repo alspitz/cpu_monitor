@@ -4,6 +4,18 @@
 
 Only nodes running on the same machine will have their CPU and memory usage published.
 
+## Dependencies
+
+* [psutil](https://pypi.org/project/psutil) for the Python version you are using (2 or 3).
+
+One of the following should work on most machines.
+```
+python -m pip install psutil
+python3 -m pip install psutil
+sudo apt install python-psutil
+sudo apt install python3-psutil
+```
+
 ## Configuration
 The polling period can be configured by setting the `poll_period` argument when launching. The default value if not specified is 1.0 seconds.
 

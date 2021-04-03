@@ -2,8 +2,8 @@
   <name>cpu_monitor</name>
   <version>0.0.0</version>
   <description>cpu_monitor</description>
-  <author email="alex@alex.com">Alex Spitzer</author>
-  <maintainer email="alex@alex.com">Alex Spitzer</maintainer>
+  <author email="aes368@cornell.edu">Alex Spitzer</author>
+  <maintainer email="aes368@cornell.edu">Alex Spitzer</maintainer>
   <license>MIT</license>
   <buildtool_depend>catkin</buildtool_depend>
   <exec_depend>python-psutil</exec_depend>

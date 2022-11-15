@@ -1,7 +1,9 @@
 <launch>
   <arg name="poll_period" default="1.0"/>
+  <arg name="source_list" default="[]"/> <!-- list of topics to monitor, includes all if empty -->
 
   <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen">
     <param name="poll_period" value="$(arg poll_period)"/>
+    <rosparam param="source_list" subst_value="True">$(arg source_list)</rosparam> 
   </node>
 </launch>

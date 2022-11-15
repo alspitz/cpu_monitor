@@ -17,6 +17,8 @@ sudo apt install python3-psutil
 ```
 
 ## Configuration
+
+### Polling Period
 The polling period can be configured by setting the `poll_period` argument when launching. The default value if not specified is 1.0 seconds.
 
 Setting `poll_period` to 10 seconds on the command line:
@@ -33,3 +35,13 @@ Setting `poll_period` to 10 seconds in a launch file_
   </include>
 </launch>
 ```
+
+### Source List
+You can specify which ROS nodes you would like to monitor by setting the `source_list` argument when launching. The default is an empty list which then monitors all ROS nodes.
+
+Setting `source_list` in the command line:
+```
+roslaunch cpu_monitor cpu_monitor.launch source_list:="[<node_name_1>, <node_name_2>]"
+```
+
+Or you can set the default values in the included launch file `cpu_monitor.launch`

@@ -39,6 +39,7 @@ if __name__ == "__main__":
   master = rospy.get_master()
 
   poll_period = rospy.get_param('~poll_period', 1.0)
+  source_list = rospy.get_param('~source_list', [])
 
   this_ip = os.environ.get("ROS_IP")
 
@@ -60,6 +61,12 @@ if __name__ == "__main__":
   while not rospy.is_shutdown():
     for node in rosnode.get_node_names():
       if node in node_map or node in ignored_nodes:
+        continue
+      
+      # if source_list is not empty, only monitor nodes in source_list
+      if len(source_list) > 0 and node not in source_list: 
+        ignored_nodes.add(node)
+        rospy.loginfo("[cpu monitor] ignoring node %s, not in source list" % (node))
         continue
 
       node_api = rosnode.get_api_uri(master, node)[2]

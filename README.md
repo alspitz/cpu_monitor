@@ -36,8 +36,11 @@ Setting `poll_period` to 10 seconds in a launch file_
 </launch>
 ```
 
+### Saving to CSV
+You can save the results to a CSV by setting the `save_to_csv` parameter to true. The results will be saved to the relative path specified in `csv_file` parameter. By default the file is saved in the folder under a file names `cpu_monitor.csv`. If `save_to_csv` is set to true, the node waits for 5 seconds for other nodes to start up before saving the list of nodes it will be monitoring. This is so that the header of the CSV stays constant throughout the tests. If new nodes pop up, they will not be recorded, as this would change the header of the CSV. 
+
 ### Source List
-You can specify which ROS nodes you would like to monitor by setting the `source_list` argument when launching. The default is an empty list which then monitors all ROS nodes.
+You can specify which ROS nodes you would like to save to csv by setting the `source_list` argument when launching. The default is an empty list which then monitors all ROS nodes active at 5 seconds after startup.
 
 Setting `source_list` in the command line:
 ```
@@ -46,5 +49,3 @@ roslaunch cpu_monitor cpu_monitor.launch source_list:="[<node_name_1>, <node_nam
 
 Or you can set the default values in the included launch file `cpu_monitor.launch`
 
-### Saving to CSV
-You can save the results to a CSV by setting the `save_to_csv` parameter to true. The results will be saved to the relative path specified in `csv_file` parameter. By default the file is saved in the folder under a file names `cpu_monitor.csv`. If `save_to_csv` is set to true, the node waits for 5 seconds for other nodes to start up before saving the list of nodes it will be monitoring. This is so that the header of the CSV stays constant throughout the tests. If new nodes pop up, they will not be recorded, as this would change the header of the CSV. 

@@ -4,10 +4,10 @@
   <arg name="csv_file" default="cpu_monitor.csv"/> <!-- if save_to_csv is true, this is the file to save to-->
   <arg name="source_list" default="[]"/> <!-- list of topics to save to csv, includes all at 5 seconds after startup if empty -->
 
-  <node pkg="cpu_monitor" name="cpu_monitor" type="monitor" output="screen">
+  <node pkg="cpu_monitor" name="cpu_monitor" type="monitor.py" output="screen">
     <param name="poll_period" value="$(arg poll_period)"/>
     <param name="save_to_csv" value="$(arg save_to_csv)"/>
     <param name="csv_file" value="$(arg csv_file)"/>
-    <rosparam param="source_list" subst_value="True">$(arg source_list)</rosparam> 
+    <rosparam param="source_list" subst_value="True">$(arg source_list)</rosparam>
   </node>
 </launch>

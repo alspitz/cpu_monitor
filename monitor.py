@@ -28,17 +28,58 @@ class Node:
     self.mem_publisher = rospy.Publisher(ns_join("~", name[1:], "mem"), UInt64, queue_size=20)
 
   def publish(self):
-    self.cpu_publisher.publish(Float32(self.proc.cpu_percent()))
-    self.mem_publisher.publish(UInt64(self.proc.memory_info().rss))
+    self.cpu = self.proc.cpu_percent()
+    self.mem = self.proc.memory_info().rss
+    self.cpu_publisher.publish(Float32(self.cpu))
+    self.mem_publisher.publish(UInt64(self.mem))
+
+  def get_values(self):
+    return self.cpu, self.mem
 
   def alive(self):
     return self.proc.is_running()
+
+class CSVWriter:
+  def __init__(self, filename, source_list):
+    self.csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+    rospy.loginfo("[cpu monitor] saving to file: %s" % self.csv_path)
+    self.file = open(self.csv_path, "w")
+    self.header_init = False
+    if len(source_list) > 0:
+      self.init_header(source_list)
+
+  def init_header(self, source_list):
+    self.source_list = source_list
+    self.file.write('time')
+    for source in self.source_list:
+      self.file.write(', %s cpu, %s mem' % (source, source))
+    self.file.write('\n')
+    rospy.loginfo("[cpu monitor] monitoring nodes: %s" % self.source_list)
+    self.header_init = True
+
+  def update(self, node_map):
+    new_csv_line = str(rospy.get_rostime())
+    for source in self.source_list:
+      if source in node_map and node_map[source].alive():
+        cpu, mem = node_map[source].get_values()
+        new_csv_line += ', %f, %f' % (cpu, mem)
+      else:
+        new_csv_line += ', , '
+    new_csv_line += "\n"
+    self.file.write(new_csv_line)
 
 if __name__ == "__main__":
   rospy.init_node("cpu_monitor")
   master = rospy.get_master()
 
   poll_period = rospy.get_param('~poll_period', 1.0)
+  save_to_csv = rospy.get_param('~save_to_csv', False)
+  csv_file_name = rospy.get_param('~csv_file', 'cpu_monitor.csv')
+  source_list = rospy.get_param('~source_list', [])
+
+  if save_to_csv:
+    csv_writer = CSVWriter(csv_file_name, source_list)
+    node_start_time = rospy.get_rostime()
 
   this_ip = os.environ.get("ROS_IP")
 
@@ -70,9 +111,9 @@ if __name__ == "__main__":
       ros_ip = node_api[7:] # strip http://
       ros_ip = ros_ip.split(':')[0] # strip :<port>/
       local_node = "localhost" in node_api or \
-                   "127.0.0.1" in node_api or \
-                   (this_ip is not None and this_ip == ros_ip) or \
-                   subprocess.check_output("hostname").decode('utf-8').strip() in node_api
+                  "127.0.0.1" in node_api or \
+                  (this_ip is not None and this_ip == ros_ip) or \
+                  subprocess.check_output("hostname").decode('utf-8').strip() in node_api
       if not local_node:
         ignored_nodes.add(node)
         rospy.loginfo("[cpu monitor] ignoring node %s with URI %s" % (node, node_api))
@@ -103,5 +144,13 @@ if __name__ == "__main__":
     vm = psutil.virtual_memory()
     for mem_topic, mem_publisher in zip(mem_topics, mem_publishers):
       mem_publisher.publish(UInt64(getattr(vm, mem_topic)))
+
+    if save_to_csv:
+      if csv_writer.header_init:
+        csv_writer.update(node_map)
+      elif (rospy.get_rostime() - node_start_time) > rospy.Duration(5): # wait 5 seconds before setting header
+        rospy.loginfo("[cpu monitor] waited for 5 seconds before initializing csv header")
+        csv_writer.init_header(list(node_map.keys()))
+
 
     rospy.sleep(poll_period)

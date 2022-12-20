@@ -103,7 +103,7 @@ if __name__ == "__main__":
       if node in node_map or node in ignored_nodes:
         continue
 
-      node_api = rosnode.get_api_uri(master, node)[2]
+      node_api = rosnode.get_api_uri(master, node, skip_cache=True)[2]
       if not node_api:
         rospy.logerr("[cpu monitor] failed to get api of node %s (%s)" % (node, node_api))
         continue

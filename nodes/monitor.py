@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import functools
 import os
@@ -91,7 +91,7 @@ if __name__ == "__main__":
   mem_topics = ["available", "used", "free", "active", "inactive", "buffers", "cached", "shared", "slab"]
 
   vm = psutil.virtual_memory()
-  mem_topics = filter(lambda topic: topic in dir(vm), mem_topics)
+  mem_topics = [topic for topic in mem_topics if topic in dir(vm)]
 
   mem_publishers = []
   for mem_topic in mem_topics:

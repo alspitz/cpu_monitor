@@ -129,8 +129,13 @@ if __name__ == "__main__":
         except:
           rospy.logerr("[cpu monitor] failed to get pid for node %s from NODEINFO response: %s" % (node, resp))
         else:
-          node_map[node] = Node(name=node, pid=pid)
-          rospy.loginfo("[cpu monitor] adding new node %s" % node)
+          try:
+            node_map[node] = Node(name=node, pid=pid)
+          except psutil.NoSuchProcess:
+            rospy.logwarn("[cpu monitor] psutil can't see %s (pid = %d). Ignoring" % (node, pid))
+            ignored_nodes.add(node)
+          else:
+            rospy.loginfo("[cpu monitor] adding new node %s" % node)
 
     for node_name, node in list(node_map.items()):
       if node.alive():

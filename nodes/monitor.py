@@ -68,6 +68,9 @@ class CSVWriter:
     new_csv_line += "\n"
     self.file.write(new_csv_line)
 
+  def close(self):
+    self.file.close()
+
 if __name__ == "__main__":
   rospy.init_node("cpu_monitor")
   master = rospy.get_master()
@@ -80,8 +83,14 @@ if __name__ == "__main__":
   if save_to_csv:
     csv_writer = CSVWriter(csv_file_name, source_list)
     node_start_time = rospy.get_rostime()
+    rospy.on_shutdown(csv_writer.close)
+  else:
+    rospy.on_shutdown(lambda: rospy.loginfo("[cpu monitor] shutting down"))
 
-  this_ip = os.environ.get("ROS_IP")
+  # tries to get 
+  this_ip = os.environ.get("ROS_HOSTNAME")
+  if this_ip is None:
+    this_ip = os.environ.get("ROS_IP")
 
   node_map = {}
   ignored_nodes = set()

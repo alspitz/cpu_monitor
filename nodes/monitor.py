@@ -84,13 +84,9 @@ if __name__ == "__main__":
     csv_writer = CSVWriter(csv_file_name, source_list)
     node_start_time = rospy.get_rostime()
     rospy.on_shutdown(csv_writer.close)
-  else:
-    rospy.on_shutdown(lambda: rospy.loginfo("[cpu monitor] shutting down"))
 
   # tries to get 
-  this_ip = os.environ.get("ROS_HOSTNAME")
-  if this_ip is None:
-    this_ip = os.environ.get("ROS_IP")
+  this_ip = os.environ.get("ROS_IP")
 
   node_map = {}
   ignored_nodes = set()
@@ -168,3 +164,5 @@ if __name__ == "__main__":
 
 
     rospy.sleep(poll_period)
+
+  rospy.loginfo("[cpu monitor] shutting down")

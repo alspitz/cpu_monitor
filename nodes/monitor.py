@@ -85,7 +85,6 @@ if __name__ == "__main__":
     node_start_time = rospy.get_rostime()
     rospy.on_shutdown(csv_writer.close)
 
-  # tries to get 
   this_ip = os.environ.get("ROS_IP")
 
   node_map = {}
